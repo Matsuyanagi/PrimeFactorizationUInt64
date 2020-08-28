@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PrimeFactorizationUInt64", "PrimeFactorizationUInt64\PrimeFactorizationUInt64.vcxproj", "{902D6255-1368-4BEC-9D42-A24F79FD36CD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UInt64Operation", "UInt64Operation\UInt64Operation.vcxproj", "{FAE449C9-C4D1-4816-BD10-F8C9565A3324}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -15,6 +17,10 @@ Global
 		{902D6255-1368-4BEC-9D42-A24F79FD36CD}.Debug|x64.Build.0 = Debug|x64
 		{902D6255-1368-4BEC-9D42-A24F79FD36CD}.Release|x64.ActiveCfg = Release|x64
 		{902D6255-1368-4BEC-9D42-A24F79FD36CD}.Release|x64.Build.0 = Release|x64
+		{FAE449C9-C4D1-4816-BD10-F8C9565A3324}.Debug|x64.ActiveCfg = Debug|x64
+		{FAE449C9-C4D1-4816-BD10-F8C9565A3324}.Debug|x64.Build.0 = Debug|x64
+		{FAE449C9-C4D1-4816-BD10-F8C9565A3324}.Release|x64.ActiveCfg = Release|x64
+		{FAE449C9-C4D1-4816-BD10-F8C9565A3324}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
