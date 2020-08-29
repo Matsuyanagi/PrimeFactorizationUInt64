@@ -9,8 +9,9 @@
 #include "prime_factorization.h"
 
 int main( int argc, const char **argv ) {
-	if ( argc < 1 ) {
+	if ( argc < 2 ) {
 		printf( "%s number(~ 2^64-1)\n", argv[ 0 ] );
+		return 1;
 	}
 	uint64_t target_number = atoll( argv[ 1 ] );
 
