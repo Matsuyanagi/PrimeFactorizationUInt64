@@ -165,7 +165,7 @@ uint64_t extended_eucledian( uint64_t a, uint64_t b, uint64_t mod, uint64_t *ox,
 	}
 	uint64_t x, y;
 	uint64_t t = b;
-	if ( b >= a ){
+	if ( b >= a ) {
 		t = b % a;
 	}
 	uint64_t gcd = extended_eucledian( t, a, mod, &x, &y );
@@ -333,7 +333,7 @@ bool is_square( uint64_t x ) {
 
 	uint64_t t = x & 7ULL;
 	// if ( ( x == 2 ) || ( ( x & ( x - 1 ) ) != 0 ) ) {
-	if ( !( t == 0 || t == 1 || t == 4 ) ){  // ! ( t == 0 || t == 1 || t == 4 )
+	if ( !( t == 0 || t == 1 || t == 4 ) ) {  // ! ( t == 0 || t == 1 || t == 4 )
 		return false;
 	}
 
