@@ -13,7 +13,7 @@ int main( int argc, const char **argv ) {
 		printf( "%s number(~ 2^64-1)\n", argv[ 0 ] );
 		return 1;
 	}
-	uint64_t target_number = atoll( argv[ 1 ] );
+	uint64_t target_number = strtoull( argv[ 1 ], NULL, 10 );
 
 	printf( "%llu\n", target_number );
 
