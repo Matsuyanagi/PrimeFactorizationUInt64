@@ -21,9 +21,8 @@ int main( int argc, const char **argv ) {
 	prime_factorization = PrimeFactorize( target_number );
 
 	for ( auto &&element : prime_factorization ) {
-		printf( "( %llu, %u )", element.first, element.second );
+		printf( "%llu, %u\n", element.first, element.second );
 	}
-	printf( "\n" );
 
 	return 0;
 }
