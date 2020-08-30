@@ -143,3 +143,20 @@ TEST( TestPrimeFactorization, tryingSquareRoot ) {
 	a = PrimeFactorizationType{ { 2ULL, 2 }, { 3ULL, 3 }, { 1048571ULL, 2 } };
 	EXPECT_EQ( a, PrimeFactorize( 118746123340428ULL ) );
 }
+
+TEST( TestPrimeFactorization, divideByPossibleMiddlePrimeNumbers ) {
+	auto a = PrimeFactorizationType{ { 1048559ULL, 1 }, { 1048571ULL, 1 }, { 1048573ULL, 1 } };
+	EXPECT_EQ( a, PrimeFactorize( 1152894016974487297ULL ) );
+	a = PrimeFactorizationType{ { 16777199ULL, 1 }, { 16777213ULL, 1 } };
+	EXPECT_EQ( a, PrimeFactorize( 281474641166387ULL ) );
+	a = PrimeFactorizationType{ { 1048559ULL, 1 }, { 1048571ULL, 1 } };
+	EXPECT_EQ( a, PrimeFactorize( 1099488559189ULL ) );
+	a = PrimeFactorizationType{ { 1073741783ULL, 1 }, { 1073741789ULL, 1 } };
+	EXPECT_EQ( a, PrimeFactorize( 1152921423002469787ULL ) );
+	a = PrimeFactorizationType{ { 4294967279ULL, 1 }, { 4294967291ULL, 1 } };
+	EXPECT_EQ( a, PrimeFactorize( 18446743979220271189ULL ) );
+	a = PrimeFactorizationType{ { 2ULL, 1 }, { 2147483629ULL, 1 }, { 2147483647ULL, 1 } };
+	EXPECT_EQ( a, PrimeFactorize( 9223371950955429926ULL ) );
+	a = PrimeFactorizationType{ { 3ULL, 1 }, { 2147483629ULL, 1 }, { 2147483647ULL, 1 } };
+	EXPECT_EQ( a, PrimeFactorize( 13835057926433144889ULL ) );
+}

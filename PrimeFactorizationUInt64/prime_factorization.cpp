@@ -4,6 +4,7 @@
 
 uint64_t DivideBySmallPrimeNumbers( uint64_t target_number, std::vector<std::pair<uint64_t, uint32_t> > &factor_pairs );
 uint64_t TryingSquareRoot( uint64_t target_number, std::vector<std::pair<uint64_t, uint32_t> > &factor_pairs );
+uint64_t DivideByPossibleMiddlePrimeNumbers( uint64_t target_number, std::vector<std::pair<uint64_t, uint32_t> > &factor_pairs );
 
 static const uint16_t prime_numbers_uint16[] = {
     /*2,*/ 3, 5,     7,     11,    13,    17,    19,    23,    29,    31,    37,    41,    43,    47,    53,    59,
@@ -434,7 +435,7 @@ std::vector<std::pair<uint64_t, uint32_t> > PrimeFactorize( uint64_t target ) {
 	if ( trailing_zero_count > 0 ) {
 		answer.emplace_back( 2, trailing_zero_count );
 		target >>= trailing_zero_count;
-		if ( target == 1 ){
+		if ( target == 1 ) {
 			return answer;
 		}
 	}
@@ -456,6 +457,7 @@ std::vector<std::pair<uint64_t, uint32_t> > PrimeFactorize( uint64_t target ) {
 	target = TryingSquareRoot( target, answer );
 
 	// Try and divide by the number of possible prime numbers.
+	target = DivideByPossibleMiddlePrimeNumbers( target, answer );
 
 	return answer;
 }
@@ -475,8 +477,9 @@ uint64_t DivideBySmallPrimeNumbers( uint64_t target_number, std::vector<std::pai
 				exp++;
 				if ( target_number == 1 ) {
 					factor_pairs.emplace_back( *pprime, exp );
-					exp = 0;
-					break;
+					// exp = 0;
+					// break;
+					return 1;
 				}
 			} else {
 				if ( exp > 0 ) {
@@ -487,16 +490,18 @@ uint64_t DivideBySmallPrimeNumbers( uint64_t target_number, std::vector<std::pai
 					if ( target_number < (uint64_t)divisor * (uint64_t)divisor ) {
 						// 今まで割った数値の2乗未満なら素数確定
 						factor_pairs.emplace_back( target_number, 1 );
-						target_number = 1;
-						break;
+						// target_number = 1;
+						// break;
+						return 1;
 					}
 
-					// todo: caution: target の素数判定。小さい素数で割る必要はない。2 のミラーラビン素数判定で確定するのは 2047
-					// まで。試し割りしていないため。
+					// todo: caution: target の素数判定。小さい素数で割る必要はない。2 のミラーラビン素数判定で確定するのは
+					// 2047 まで。試し割りしていないため。
 					if ( is_prime( target_number ) ) {
 						factor_pairs.emplace_back( target_number, 1 );
-						target_number = 1;
-						break;
+						// target_number = 1;
+						// break;
+						return 1;
 					}
 
 					break;
@@ -516,5 +521,54 @@ uint64_t TryingSquareRoot( uint64_t target_number, std::vector<std::pair<uint64_
 		factor_pairs.emplace_back( sqrt, 2 );
 		return 1;
 	}
+	return target_number;
+}
+
+uint64_t DivideByPossibleMiddlePrimeNumbers( uint64_t target_number, std::vector<std::pair<uint64_t, uint32_t> > &factor_pairs ) {
+	const uint32_t base_offset[] = { 1, 7, 11, 19, 23, 29 };
+	const int base_offset_size = sizeof( base_offset ) / sizeof( base_offset[ 0 ] );
+	for ( uint32_t base30 = 65520U; base30 >= 65520 && base30 <= 0xFFFFFFF0U; base30 += 30U ) {
+		for ( int i = 0; i < base_offset_size; i++ ) {
+			int exp = 0;
+			const uint32_t divisor = base30 + base_offset[ i ];
+			if ( 0xFFFFFFFFU - base30 < base_offset[ i ] ) {
+				break;
+			}
+			// todo: divisor が簡易に素数でないと判定できれば continue してしまっていいのだが
+
+			do {
+				uint64_t rem = target_number % divisor;
+				if ( rem == 0 ) {
+					target_number = target_number / divisor;
+					exp++;
+					if ( target_number == 1 ) {
+						factor_pairs.emplace_back( divisor, exp );
+						return 1;
+					}
+				} else {
+					if ( exp > 0 ) {
+						factor_pairs.emplace_back( divisor, exp );
+						exp = 0;
+
+						// todo: divisor 割り終わったところだから、divisor^2 未満なら divisor 以上の約数はない
+						if ( target_number < (uint64_t)divisor * (uint64_t)divisor ) {
+							// 今まで割った数値の2乗未満なら素数確定
+							factor_pairs.emplace_back( target_number, 1 );
+							return 1;
+						}
+
+						// todo: caution: target の素数判定。小さい素数で割る必要はない。2
+						// のミラーラビン素数判定で確定するのは 2047 まで。試し割りしていないため。
+						if ( is_prime( target_number ) ) {
+							factor_pairs.emplace_back( target_number, 1 );
+							return 1;
+						}
+						break;
+					}
+				}
+			} while ( exp > 0 );
+		}
+	}
+
 	return target_number;
 }
