@@ -77,6 +77,30 @@ TEST( TestPrimeFactorization, powerOf2 ) {
 	EXPECT_EQ( a, PrimeFactorize( 9223372036854775808ULL ) );
 }
 
+TEST( TestPrimeFactorization, powerOf2AndPrime ) {
+	auto a = PrimeFactorizationType{ { 2, 1 }, { 3, 1 } };
+	EXPECT_EQ( a, PrimeFactorize( 6ULL ) );
+	a = PrimeFactorizationType{ { 2, 1 }, { 7, 1 } };
+	EXPECT_EQ( a, PrimeFactorize( 14ULL ) );
+	a = PrimeFactorizationType{ { 2, 2 }, { 3, 1 }, { 5, 1 }, { 7, 2 } };
+	EXPECT_EQ( a, PrimeFactorize( 2940ULL ) );
+	a = PrimeFactorizationType{ { 2, 1 }, { 971, 1 } };
+	EXPECT_EQ( a, PrimeFactorize( 1942ULL ) );
+	a = PrimeFactorizationType{ { 2, 2 }, { 62549, 1 } };
+	EXPECT_EQ( a, PrimeFactorize( 250196ULL ) );
+	a = PrimeFactorizationType{ { 2, 32 }, { 104651ULL, 1 } };
+	EXPECT_EQ( a, PrimeFactorize( 449472622493696ULL ) );
+
+	a = PrimeFactorizationType{ { 2, 1 }, { 104161ULL, 1 } };
+	EXPECT_EQ( a, PrimeFactorize( 208322ULL ) );
+	a = PrimeFactorizationType{ { 2, 2 }, { 3, 2 }, { 100621ULL, 1 } };
+	EXPECT_EQ( a, PrimeFactorize( 3622356ULL ) );
+	a = PrimeFactorizationType{ { 2, 1 }, { 9223372036854775421ULL, 1 } };
+	EXPECT_EQ( a, PrimeFactorize( 18446744073709550842ULL ) );
+	a = PrimeFactorizationType{ { 2, 1 }, { 2147483629ULL, 1 } };
+	EXPECT_EQ( a, PrimeFactorize( 4294967258ULL ) );
+}
+
 TEST( TestPrimeFactorization, divSmallPrime ) {
 	auto a = PrimeFactorizationType{ { 3ULL, 2 } };
 	EXPECT_EQ( a, PrimeFactorize( 3ULL * 3ULL ) );

@@ -427,19 +427,28 @@ std::vector<std::pair<uint64_t, uint32_t> > PrimeFactorize( uint64_t target ) {
 	std::vector<std::pair<uint64_t, uint32_t> > answer;
 	answer.reserve( 16 );  // ( 2 * 3 * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41 * 43 * 47 * 53 ) > 2**64
 
-	// prime number
-	if ( is_prime( target ) ) {
-		return std::vector<std::pair<uint64_t, uint32_t> >{ { target, 1 } };
-	}
 	// trailing zero count
 	//	xxxxx100000 => xxxxx1 * (2^5)
 	auto trailing_zero_count = _tzcnt_u64( target );
 	if ( trailing_zero_count > 0 ) {
 		answer.emplace_back( 2, trailing_zero_count );
+		target >>= trailing_zero_count;
 	}
 
-	// trying small known prime numbers
+	// prime number
+	if ( is_prime( target ) ) {
+		answer.emplace_back( target, 1 );
+		return answer;
+	}
+
+	// trying small known prime numbers( ~65536 )
 	target = DivideBySmallPrimeNumbers( target, answer );
+
+	if ( target == 1 ) {
+		return answer;
+	}
+
+	// Try and divide by the number of possible prime numbers.
 
 	return answer;
 }
@@ -451,9 +460,10 @@ uint64_t DivideBySmallPrimeNumbers( uint64_t target_number, std::vector<std::pai
 	int exp = 0;
 	for ( int i = 0; target_number > 1 && i < prime_numbers_uint16_size; i++, pprime++ ) {
 		do {
-			uint64_t rem = target_number % static_cast<uint32_t>( *pprime );
+			uint32_t divisor = static_cast<uint32_t>( *pprime );
+			uint64_t rem = target_number % divisor;
 			if ( rem == 0 ) {
-				target_number = target_number / static_cast<uint32_t>( *pprime );
+				target_number = target_number / divisor;
 				exp++;
 				if ( target_number == 1 ) {
 					factor_pairs.emplace_back( *pprime, exp );
@@ -464,6 +474,22 @@ uint64_t DivideBySmallPrimeNumbers( uint64_t target_number, std::vector<std::pai
 				if ( exp > 0 ) {
 					factor_pairs.emplace_back( *pprime, exp );
 					exp = 0;
+
+					// todo: divisor 割り終わったところだから、divisor^2 未満なら divisor 以上の約数はない
+					if ( target_number < (uint64_t)divisor * (uint64_t)divisor ) {
+						// 今まで割った数値の2乗未満なら素数確定
+						factor_pairs.emplace_back( target_number, 1 );
+						target_number = 1;
+						break;
+					}
+
+					// todo: caution: target の素数判定。小さい素数で割る必要はない。2 のミラーラビン素数判定で確定するのは 2047 まで。試し割りしていないため。
+					if ( is_prime( target_number ) ) {
+						factor_pairs.emplace_back( target_number, 1 );
+						target_number = 1;
+						break;
+					}
+
 					break;
 				}
 			}
