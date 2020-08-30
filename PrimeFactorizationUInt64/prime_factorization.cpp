@@ -3,6 +3,7 @@
 #include "uint64_operation.h"
 
 uint64_t DivideBySmallPrimeNumbers( uint64_t target_number, std::vector<std::pair<uint64_t, uint32_t> > &factor_pairs );
+uint64_t TryingSquareRoot( uint64_t target_number, std::vector<std::pair<uint64_t, uint32_t> > &factor_pairs );
 
 static const uint16_t prime_numbers_uint16[] = {
     /*2,*/ 3, 5,     7,     11,    13,    17,    19,    23,    29,    31,    37,    41,    43,    47,    53,    59,
@@ -433,6 +434,9 @@ std::vector<std::pair<uint64_t, uint32_t> > PrimeFactorize( uint64_t target ) {
 	if ( trailing_zero_count > 0 ) {
 		answer.emplace_back( 2, trailing_zero_count );
 		target >>= trailing_zero_count;
+		if ( target == 1 ){
+			return answer;
+		}
 	}
 
 	// prime number
@@ -448,11 +452,15 @@ std::vector<std::pair<uint64_t, uint32_t> > PrimeFactorize( uint64_t target ) {
 		return answer;
 	}
 
+	// Try to find the square root.
+	target = TryingSquareRoot( target, answer );
+
 	// Try and divide by the number of possible prime numbers.
 
 	return answer;
 }
 
+// trying small known prime numbers( ~65536 )
 uint64_t DivideBySmallPrimeNumbers( uint64_t target_number, std::vector<std::pair<uint64_t, uint32_t> > &factor_pairs ) {
 	const int prime_numbers_uint16_size =
 	    static_cast<int>( sizeof( prime_numbers_uint16 ) / sizeof( prime_numbers_uint16[ 0 ] ) );
@@ -483,7 +491,8 @@ uint64_t DivideBySmallPrimeNumbers( uint64_t target_number, std::vector<std::pai
 						break;
 					}
 
-					// todo: caution: target の素数判定。小さい素数で割る必要はない。2 のミラーラビン素数判定で確定するのは 2047 まで。試し割りしていないため。
+					// todo: caution: target の素数判定。小さい素数で割る必要はない。2 のミラーラビン素数判定で確定するのは 2047
+					// まで。試し割りしていないため。
 					if ( is_prime( target_number ) ) {
 						factor_pairs.emplace_back( target_number, 1 );
 						target_number = 1;
@@ -494,6 +503,18 @@ uint64_t DivideBySmallPrimeNumbers( uint64_t target_number, std::vector<std::pai
 				}
 			}
 		} while ( exp > 0 );
+	}
+	return target_number;
+}
+
+// Try to find the square root.
+uint64_t TryingSquareRoot( uint64_t target_number, std::vector<std::pair<uint64_t, uint32_t> > &factor_pairs ) {
+	if ( is_square( target_number ) ) {
+		// すでに 16bit で試し割りされているから、ここで求まった平方根は素数であることが確定している
+		//	約数があるとすれば 17bit 以上。
+		uint64_t sqrt = isqrt( target_number );
+		factor_pairs.emplace_back( sqrt, 2 );
+		return 1;
 	}
 	return target_number;
 }

@@ -130,3 +130,16 @@ TEST( TestPrimeFactorization, divSmallPrime ) {
 	a = PrimeFactorizationType{ { 65521ULL, 4 } };
 	EXPECT_EQ( a, PrimeFactorize( 18429861372428076481ULL ) );
 }
+
+TEST( TestPrimeFactorization, tryingSquareRoot ) {
+	auto a = PrimeFactorizationType{ { 3ULL, 3 }, { 131059ULL, 2 } };
+	EXPECT_EQ( a, PrimeFactorize( 463764459987ULL ) );
+	a = PrimeFactorizationType{ { 2147483579ULL, 2 } };
+	EXPECT_EQ( a, PrimeFactorize( 4611685722074649241ULL ) );
+	a = PrimeFactorizationType{ { 131041ULL, 2 } };
+	EXPECT_EQ( a, PrimeFactorize( 17171743681ULL ) );
+	a = PrimeFactorizationType{ { 1048573ULL, 2 } };
+	EXPECT_EQ( a, PrimeFactorize( 1099505336329ULL ) );
+	a = PrimeFactorizationType{ { 2ULL, 2 }, { 3ULL, 3 }, { 1048571ULL, 2 } };
+	EXPECT_EQ( a, PrimeFactorize( 118746123340428ULL ) );
+}
