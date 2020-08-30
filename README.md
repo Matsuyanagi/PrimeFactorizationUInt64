@@ -1,2 +1,26 @@
 # PrimeFactorizationUInt64
 Prime factorization up to UInt64(2^64-1).
+
+```cmd
+> PrimeFactorizationUInt64.exe 18446743979220271189
+18446743979220271189
+4294967279, 1
+4294967291, 1
+
+> PrimeFactorizationUInt64.exe 11111111111111455
+11111111111111455
+5, 1
+19, 1
+116959064327489, 1
+
+> PrimeFactorizationUInt64.exe 111111111111111111
+111111111111111111
+3, 2
+7, 1
+11, 1
+13, 1
+19, 1
+37, 1
+52579, 1
+333667, 1
+```
