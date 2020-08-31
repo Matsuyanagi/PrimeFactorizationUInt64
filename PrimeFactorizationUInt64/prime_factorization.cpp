@@ -527,7 +527,7 @@ uint64_t TryingSquareRoot( uint64_t target_number, std::vector<std::pair<uint64_
 uint64_t DivideByPossibleMiddlePrimeNumbers( uint64_t target_number, std::vector<std::pair<uint64_t, uint32_t> > &factor_pairs ) {
 	const uint32_t base_offset[] = { 1, 7, 11, 19, 23, 29 };
 	const int base_offset_size = sizeof( base_offset ) / sizeof( base_offset[ 0 ] );
-	for ( uint32_t base30 = 65520U; base30 < 2 << 22; base30 += 30U ) {
+	for ( uint32_t base30 = 65520U; base30 < 2642247U; base30 += 30U ) {  // ³√( 2^64 ) ≒ 2642246
 		for ( int i = 0; i < base_offset_size; i++ ) {
 			int exp = 0;
 			const uint32_t divisor = base30 + base_offset[ i ];
@@ -575,63 +575,40 @@ uint64_t DivideByPossibleLargePrimeNumbersOMP( uint64_t target_number,
 	const int32_t base_offset[] = { 1, 7, 11, 19, 23, 29 };
 	const int base_offset_size = sizeof( base_offset ) / sizeof( base_offset[ 0 ] );
 	const int64_t target_sqrt = static_cast<int64_t>( isqrt( target_number ) ) + 1;
+	const int64_t target_sqrt_div_30 = target_sqrt / 30 + 1;
 	int i;
-	int exp = 0;
 	int64_t divisor;
 	uint64_t rem;
 	int64_t base30;
-
-// #pragma omp parallel for schedule( guided ) private( base30, i, exp, divisor, rem )
-// #pragma omp parallel for schedule( dynamic ) private( base30, i, exp, divisor, rem )
-#pragma omp parallel for schedule( static ) private( base30, i, exp, divisor, rem )
-	// for ( int64_t base30 = 2097120; base30 < target_sqrt; base30 += 30 ) {
-	for ( int64_t base_cnt = 2097120LL / 30; base_cnt < target_sqrt / 30 + 1; base_cnt++ ) {
+	int64_t base_cnt;
+// #pragma omp parallel for schedule( guided ) private( base30, i, divisor, rem )
+// #pragma omp parallel for schedule( dynamic ) private( base30, i, divisor, rem )
+// #pragma omp parallel for schedule( static ) private( base30, i, divisor, rem )
+#pragma omp parallel for private( base30, i, divisor, rem )
+	// ³√( 2^64 ) ≒ 2642246
+	for ( base_cnt = 2642220LL / 30; base_cnt < target_sqrt_div_30; base_cnt++ ) {
 		base30 = base_cnt * 30;
 		for ( i = 0; i < base_offset_size; i++ ) {
-			exp = 0;
 			divisor = base30 + base_offset[ i ];
 			if ( 0xFFFFFFFFU - base30 < base_offset[ i ] ) {
 				break;
 			}
 
-			do {
-				rem = target_number % divisor;
-				if ( rem == 0 ) {
+			rem = target_number % divisor;
+			if ( rem == 0 ) {
 #pragma omp atomic
-					target_number /= divisor;
-					exp++;
-					if ( target_number == 1 ) {
-						factor_pairs.emplace_back( divisor, exp );
-						// return 1;
-						break;
-					}
+				target_number /= divisor;
+
+				if ( divisor < target_number ) {
+					factor_pairs.emplace_back( divisor, 1 );
+					factor_pairs.emplace_back( target_number, 1 );
+				} else if ( divisor > target_number ) {
+					factor_pairs.emplace_back( target_number, 1 );
+					factor_pairs.emplace_back( divisor, 1 );
 				} else {
-					if ( exp > 0 ) {
-						factor_pairs.emplace_back( divisor, exp );
-						exp = 0;
-
-						// todo: divisor 割り終わったところだから、divisor^2 未満なら divisor 以上の約数はない
-						if ( target_number < (uint64_t)divisor * (uint64_t)divisor ) {
-							// 今まで割った数値の2乗未満なら素数確定
-							factor_pairs.emplace_back( target_number, 1 );
-							target_number = 1;
-							// return 1;
-							break;
-						}
-
-						// todo: caution: target の素数判定。小さい素数で割る必要はない。2
-						// のミラーラビン素数判定で確定するのは 2047 まで。試し割りしていないため。
-						if ( is_prime( target_number ) ) {
-							factor_pairs.emplace_back( target_number, 1 );
-							target_number = 1;
-							// return 1;
-							break;
-						}
-						break;
-					}
+					factor_pairs.emplace_back( divisor, 2 );
 				}
-			} while ( exp > 0 );
-			if ( target_number == 1 ) {
+				target_number = 1;
 				break;
 			}
 		}
