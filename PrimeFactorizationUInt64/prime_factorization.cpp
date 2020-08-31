@@ -422,16 +422,15 @@ static const uint16_t prime_numbers_uint16[] = {
     65381,    65393, 65407, 65413, 65419, 65423, 65437, 65447, 65449, 65479, 65497, 65519, 65521 };
 
 std::vector<std::pair<uint64_t, uint32_t> > PrimeFactorize( uint64_t target ) {
-	// target <= 5
-	if ( target <= 5 ) {
-		if ( target == 4 ) {
-			return std::vector<std::pair<uint64_t, uint32_t> >{ { 2, 2 } };
-		}
-		return std::vector<std::pair<uint64_t, uint32_t> >{ { target, 1 } };
-	}
-
 	std::vector<std::pair<uint64_t, uint32_t> > answer;
 	answer.reserve( 16 );  // ( 2 * 3 * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41 * 43 * 47 * 53 ) > 2**64
+
+	// target <= 3
+	// 0 => (0,1) , 1 => (1,1), 2 => (2,1), 3 => (3,1)
+	if ( target <= 3 ) {
+		answer.emplace_back( target, 1 );
+		return answer;
+	}
 
 	// trailing zero count
 	//	xxxxx100000 => xxxxx1 * (2^5)
@@ -442,6 +441,14 @@ std::vector<std::pair<uint64_t, uint32_t> > PrimeFactorize( uint64_t target ) {
 		if ( target == 1 ) {
 			return answer;
 		}
+	}
+	if ( target < 15 ) {
+		if ( target == 9 ) {
+			answer.emplace_back( 3, 2 );
+			return answer;
+		}
+		answer.emplace_back( target, 1 );
+		return answer;
 	}
 
 	// prime number
@@ -473,8 +480,8 @@ uint64_t DivideBySmallPrimeNumbers( uint64_t target_number, std::vector<std::pai
 	const int prime_numbers_uint16_size =
 	    static_cast<int>( sizeof( prime_numbers_uint16 ) / sizeof( prime_numbers_uint16[ 0 ] ) );
 	const uint16_t *pprime = prime_numbers_uint16;
-	int exp = 0;
 	for ( int i = 0; target_number > 1 && i < prime_numbers_uint16_size; i++, pprime++ ) {
+		int exp = 0;
 		do {
 			uint32_t divisor = static_cast<uint32_t>( *pprime );
 			uint64_t rem = target_number % divisor;
@@ -488,7 +495,6 @@ uint64_t DivideBySmallPrimeNumbers( uint64_t target_number, std::vector<std::pai
 			} else {
 				if ( exp > 0 ) {
 					factor_pairs.emplace_back( *pprime, exp );
-					exp = 0;
 
 					// todo: divisor 割り終わったところだから、divisor^2 未満なら divisor 以上の約数はない
 					if ( target_number < (uint64_t)divisor * (uint64_t)divisor ) {
@@ -544,7 +550,6 @@ uint64_t DivideByPossibleMiddlePrimeNumbers( uint64_t target_number, std::vector
 				} else {
 					if ( exp > 0 ) {
 						factor_pairs.emplace_back( divisor, exp );
-						exp = 0;
 
 						// todo: divisor 割り終わったところだから、divisor^2 未満なら divisor 以上の約数はない
 						if ( target_number < (uint64_t)divisor * (uint64_t)divisor ) {
