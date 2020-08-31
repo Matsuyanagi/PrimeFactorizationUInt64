@@ -586,6 +586,7 @@ uint64_t DivideByPossibleLargePrimeNumbersOMP( uint64_t target_number,
 	uint64_t rem;
 	int64_t base30;
 	int64_t base_cnt;
+	volatile long lock = 0;
 // #pragma omp parallel for schedule( guided ) private( base30, i, divisor, rem )
 // #pragma omp parallel for schedule( dynamic ) private( base30, i, divisor, rem )
 // #pragma omp parallel for schedule( static ) private( base30, i, divisor, rem )
@@ -601,6 +602,9 @@ uint64_t DivideByPossibleLargePrimeNumbersOMP( uint64_t target_number,
 
 			rem = target_number % divisor;
 			if ( rem == 0 ) {
+				if ( _InterlockedExchange( &lock, 1 ) == 1 ) {
+					break;
+				}
 #pragma omp atomic
 				target_number /= divisor;
 
@@ -614,6 +618,7 @@ uint64_t DivideByPossibleLargePrimeNumbersOMP( uint64_t target_number,
 					factor_pairs.emplace_back( divisor, 2 );
 				}
 				target_number = 1;
+				_InterlockedExchange( &lock, 0 );
 				break;
 			}
 		}
