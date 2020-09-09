@@ -577,7 +577,7 @@ uint64_t DivideByPossibleMiddlePrimeNumbers( uint64_t target_number, std::vector
 // OpenMP 並列化
 uint64_t DivideByPossibleLargePrimeNumbersOMP( uint64_t target_number,
                                                std::vector<std::pair<uint64_t, uint32_t> > &factor_pairs ) {
-	const static int16_t base_offset[] = {
+	alignas(64) const static uint8_t base_offset[] = {
 	    1,
 	    /* 7, */ 11,
 	    13,
@@ -627,14 +627,6 @@ uint64_t DivideByPossibleLargePrimeNumbersOMP( uint64_t target_number,
 	    180 + 17,
 	    180 + 19, /* 180 + 23, */
 	    180 + 29,
-	    210 + 1,
-	    210 + 7,
-	    210 + 11,
-	    210 + 13,
-	    210 + 17,
-	    210 + 19,
-	    210 + 23,
-	    210 + 29,
 	};
 	const int base_offset_size = sizeof( base_offset ) / sizeof( base_offset[ 0 ] );
 	const int64_t target_sqrt = static_cast<int64_t>( isqrt( target_number ) ) + 1;
