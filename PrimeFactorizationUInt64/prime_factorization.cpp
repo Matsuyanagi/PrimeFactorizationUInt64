@@ -578,16 +578,67 @@ uint64_t DivideByPossibleMiddlePrimeNumbers( uint64_t target_number, std::vector
 uint64_t DivideByPossibleLargePrimeNumbersOMP( uint64_t target_number,
                                                std::vector<std::pair<uint64_t, uint32_t> > &factor_pairs ) {
 	const static int16_t base_offset[] = {
-	    1,        7,        11,       13,       17,       19,       23,       29,       30 + 1,   30 + 7,   30 + 11,
-	    30 + 13,  30 + 17,  30 + 19,  30 + 23,  30 + 29,  60 + 1,   60 + 7,   60 + 11,  60 + 13,  60 + 17,  60 + 19,
-	    60 + 23,  60 + 29,  90 + 1,   90 + 7,   90 + 11,  90 + 13,  90 + 17,  90 + 19,  90 + 23,  90 + 29,  120 + 1,
-	    120 + 7,  120 + 11, 120 + 13, 120 + 17, 120 + 19, 120 + 23, 120 + 29, 150 + 1,  150 + 7,  150 + 11, 150 + 13,
-	    150 + 17, 150 + 19, 150 + 23, 150 + 29, 180 + 1,  180 + 7,  180 + 11, 180 + 13, 180 + 17, 180 + 19, 180 + 23,
-	    180 + 29, 210 + 1,  210 + 7,  210 + 11, 210 + 13, 210 + 17, 210 + 19, 210 + 23, 210 + 29,
+	    1,
+	    /* 7, */ 11,
+	    13,
+	    17,
+	    19,
+	    23,
+	    29,
+	    30 + 1,
+	    30 + 7,
+	    30 + 11,
+	    30 + 13,
+	    30 + 17,
+	    30 + 19,
+	    30 + 23,
+	    30 + 29,
+	    60 + 1,
+	    60 + 7,
+	    60 + 11,
+	    60 + 13,
+	    /* 60 + 17, */ 60 + 19,
+	    60 + 23,
+	    60 + 29,
+	    /* 90 + 1, */ 90 + 7,
+	    90 + 11,
+	    90 + 13,
+	    90 + 17,
+	    90 + 19,
+	    90 + 23,
+	    /* 90 + 29, */ 120 + 1,
+	    120 + 7,
+	    120 + 11,
+	    /* 120 + 13, */ 120 + 17,
+	    120 + 19,
+	    120 + 23,
+	    120 + 29,
+	    150 + 1,
+	    150 + 7,
+	    /* 150 + 11, */ 150 + 13,
+	    150 + 17,
+	    150 + 19,
+	    150 + 23,
+	    150 + 29,
+	    180 + 1,
+	    180 + 7,
+	    180 + 11,
+	    180 + 13,
+	    180 + 17,
+	    180 + 19, /* 180 + 23, */
+	    180 + 29,
+	    210 + 1,
+	    210 + 7,
+	    210 + 11,
+	    210 + 13,
+	    210 + 17,
+	    210 + 19,
+	    210 + 23,
+	    210 + 29,
 	};
 	const int base_offset_size = sizeof( base_offset ) / sizeof( base_offset[ 0 ] );
 	const int64_t target_sqrt = static_cast<int64_t>( isqrt( target_number ) ) + 1;
-	const int64_t target_sqrt_div_240 = target_sqrt / 240 + 1;
+	const int64_t target_sqrt_div_210 = target_sqrt / 210 + 1;
 	int i;
 	int64_t divisor;
 	uint64_t rem;
@@ -597,10 +648,10 @@ uint64_t DivideByPossibleLargePrimeNumbersOMP( uint64_t target_number,
 // #pragma omp parallel for schedule( guided ) private( base30, i, divisor, rem )
 // #pragma omp parallel for schedule( dynamic ) private( base30, i, divisor, rem )
 // #pragma omp parallel for schedule( static ) private( base30, i, divisor, rem )
-// ³√( 2^64 ) ≒ 2642246 -> 2642246 % 240 = 86, 2642246 - 86 = 2642160
+// ³√( 2^64 ) ≒ 2642246 -> 2642246 % 210 = 26, 2642246 - 26 = 2642220
 #pragma omp parallel for private( base30, i, divisor, rem )
-	for ( base_cnt = 11009LL; base_cnt < target_sqrt_div_240; base_cnt++ ) {  // 2642160LL / 240 = 11009
-		base30 = base_cnt * 240;
+	for ( base_cnt = 12582LL; base_cnt < target_sqrt_div_210; base_cnt++ ) {  // 2642220LL / 210 = 12582
+		base30 = base_cnt * 210;
 		for ( i = 0; i < base_offset_size; i++ ) {
 			divisor = base30 + base_offset[ i ];
 			if ( 0xFFFFFFFFU - base30 < base_offset[ i ] ) {
