@@ -9,6 +9,8 @@ uint64_t TryingSquareRoot( uint64_t target_number, std::vector<std::pair<uint64_
 uint64_t DivideByPossibleMiddlePrimeNumbers( uint64_t target_number, std::vector<std::pair<uint64_t, uint32_t> > &factor_pairs );
 uint64_t DivideByPossibleLargePrimeNumbersOMP( uint64_t target_number,
                                                std::vector<std::pair<uint64_t, uint32_t> > &factor_pairs );
+uint64_t uint64_rem( uint64_t a, uint64_t divisor );
+uint64_t uint64_rem_inner( uint64_t a, uint64_t divisor );
 
 static const uint16_t prime_numbers_uint16[] = {
     /*2,*/ 3, 5,     7,     11,    13,    17,    19,    23,    29,    31,    37,    41,    43,    47,    53,    59,
@@ -658,7 +660,8 @@ uint64_t DivideByPossibleLargePrimeNumbersOMP( uint64_t target_number,
 				break;
 			}
 
-			rem = target_number % divisor;
+			// rem = target_number % divisor;
+			rem = uint64_rem_inner( target_number, divisor );
 			if ( rem == 0 ) {
 				if ( _InterlockedExchange( &lock, 1 ) == 1 ) {
 					break;
@@ -685,4 +688,40 @@ uint64_t DivideByPossibleLargePrimeNumbersOMP( uint64_t target_number,
 		}
 	}
 	return target_number;
+}
+
+/**
+ *  手動割り算
+ */
+uint64_t uint64_rem( uint64_t a, uint64_t divisor ) {
+	if ( divisor == 0 ) {
+		return ULLONG_MAX;
+	}
+	if ( divisor == 1 ) {
+		return 0;
+	}
+	if ( a < divisor ) {
+		return a;
+	}
+	if ( a == divisor ) {
+		return 0;
+	}
+	return uint64_rem_inner( a, divisor );
+}
+
+uint64_t uint64_rem_inner( uint64_t a, uint64_t divisor ) {
+	const int head_divisor = _lzcnt_u64( divisor );
+	while ( a >= divisor ) {
+		const int head_a = _lzcnt_u64( a );
+
+		uint64_t divisor_shifted = divisor << ( head_divisor - head_a );
+		// if ( a < divisor_shifted ) {
+			// divisor_shifted >>= 1;
+		// }
+		a -= divisor_shifted;
+        if ( ( a & 0x8000'0000'0000'0000ULL ) != 0 ){
+			a += divisor_shifted >> 1;
+		}
+	}
+	return a;
 }
