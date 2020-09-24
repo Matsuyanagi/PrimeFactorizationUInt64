@@ -159,4 +159,7 @@ TEST( TestPrimeFactorization, divideByPossibleMiddlePrimeNumbers ) {
 	EXPECT_EQ( a, PrimeFactorize( 9223371950955429926ULL ) );
 	a = PrimeFactorizationType{ { 3ULL, 1 }, { 2147483629ULL, 1 }, { 2147483647ULL, 1 } };
 	EXPECT_EQ( a, PrimeFactorize( 13835057926433144889ULL ) );
+	a = PrimeFactorizationType{ { 3ULL, 1 },   { 5ULL, 1 },     { 17ULL, 1 },  { 257ULL, 1 },
+	                            { 641ULL, 1 }, { 65537ULL, 1 }, { 6700417ULL, 1 } };
+	EXPECT_EQ( a, PrimeFactorize( 0xFFFFFFFFFFFFFFFF ) );
 }

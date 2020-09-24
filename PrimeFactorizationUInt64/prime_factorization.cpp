@@ -531,7 +531,7 @@ uint64_t TryingSquareRoot( uint64_t target_number, std::vector<std::pair<uint64_
 }
 
 uint64_t DivideByPossibleMiddlePrimeNumbers( uint64_t target_number, std::vector<std::pair<uint64_t, uint32_t> > &factor_pairs ) {
-	const uint32_t base_offset[] = { 1, 7, 11, 19, 23, 29 };
+	const uint32_t base_offset[] = { 1, 7, 11, 13, 17, 19, 23, 29 };
 	const int base_offset_size = sizeof( base_offset ) / sizeof( base_offset[ 0 ] );
 	for ( uint32_t base30 = 65520U; base30 < 2642247U; base30 += 30U ) {  // ³√( 2^64 ) ≒ 2642246
 		for ( int i = 0; i < base_offset_size; i++ ) {
